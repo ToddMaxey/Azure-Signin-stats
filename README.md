@@ -57,21 +57,21 @@ UserAgent:
   Microsoft%20Authenticator/1 CFNetwork/1498.700.2 Darwin/23.6.0 ;iPhone: 1
 
 Locations:
-  Allen, Texas, US: 546
-  Sachse, Texas, US: 243
-  Wylie, Texas, US: 200
-  Denver, Colorado, US: 98
-  Fort Worth, Texas, US: 33
-  Dallas, Texas, US: 31
-  The Colony, Texas, US: 12
-  Dallas/Fort Worth International Airport, Texas, US: 11
-  San Antonio, Texas, US: 8
-  Plano, Texas, US: 4
-  Irving, Texas, US: 3
-  Carrollton, Texas, US: 2
-  , , : 1
-  Grand Prairie, Texas, US: 1
-  Norwalk, Connecticut, US: 1
+  Anchorage, Alaska, US: 546 
+  Fairbanks, Alaska, US: 243 
+  Juneau, Alaska, US: 200 
+  Sitka, Alaska, US: 98 
+  Ketchikan, Alaska, US: 33 
+  Wasilla, Alaska, US: 31 
+  Kenai, Alaska, US: 12 
+  Kodiak, Alaska, US: 11 
+  Palmer, Alaska, US: 8 
+  Bethel, Alaska, US: 4 
+  Nome, Alaska, US: 3 
+  Kotzebue, Alaska, US: 2 
+  , , : 1 
+  Unalaska, Alaska, US: 1 
+  Valdez, Alaska, US: 1
 
 IPs:
   97.186.97.71: 989
