@@ -1,4 +1,4 @@
-﻿# Function to check and install or update Microsoft.Graph module
+# Function to check and install or update Microsoft.Graph module
 function Ensure-Module {
     param (
         [Parameter(Mandatory = $true)]
@@ -30,11 +30,11 @@ function Ensure-Module {
 Ensure-Module -ModuleName "Microsoft.Graph" -Scope "CurrentUser"
 
 # Prompt for the UPN of the user
-$UserPrincipalName = Read-Host -Prompt "Enter the UPN of the user to gather sign-in information for"
+$UserPrincipalName = Read-Host -Prompt "To retrieve sign-in information, input the User Principal Name (UPN) of the user"
 
 # Connect to Microsoft Graph interactively
 try {
-    Connect-MgGraph -Scopes "AuditLog.Read.All", "Directory.Read.All"
+    Connect-MgGraph -Scopes "AuditLog.Read.All", "Directory.Read.All" -NoWelcome
     Write-Output "Successfully connected to Microsoft Graph."
 } catch {
     Write-Error "Failed to connect to Microsoft Graph: $_"
@@ -53,9 +53,12 @@ function Get-UserSignInData {
         $filter = "userPrincipalName eq '$UserPrincipalName'"
         $top = 1000
 
-        $requestUrl = "https://graph.microsoft.com/beta/auditLogs/signIns?\$filter=$filter&\$top=$top"
+        $encodedFilter = [System.Web.HttpUtility]::UrlEncode($filter)
+        $requestUrl = "https://graph.microsoft.com/beta/auditLogs/signIns?\$filter=$encodedFilter&\$top=$top"
+        Write-Output "Request URL: $requestUrl"  # Debug output to verify the filter
 
         $response = Invoke-MgGraphRequest -Method GET -Uri $requestUrl
+        Write-Output "Response received: $($response | ConvertTo-Json -Depth 5)"  # Debug output to verify the response
 
         $signIns += $response.value
 
@@ -71,7 +74,28 @@ function Get-UserSignInData {
     }
 }
 
-# Function to analyze user sign-in data
+# Function to categorize sign-in data into successful and failed pools
+function Categorize-SignInData {
+    param (
+        [Parameter(Mandatory = $true)]
+        [array]$SignInData
+    )
+
+    $successfulSignIns = @()
+    $failedSignIns = @()
+
+    foreach ($signIn in $SignInData) {
+        if ($signIn.status.errorCode -eq 0 -or $signIn.status.errorCode -in @(50053,50055,50056,50057,50059,50072,50074,50125,50128,50129,50131,81010,81011,81012,81013,81014,81015,81016,81017,81018,81019)) {
+            $successfulSignIns += $signIn
+        } else {
+            $failedSignIns += $signIn
+        }
+    }
+
+    return @{ Successful = $successfulSignIns; Failed = $failedSignIns }
+}
+
+# Function to analyze sign-in data
 function Analyze-SignInData {
     param (
         [Parameter(Mandatory = $true)]
@@ -87,9 +111,12 @@ function Analyze-SignInData {
     $times = $SignInData | ForEach-Object { $_.createdDateTime }
     $osTypes = $SignInData | ForEach-Object { if ($_.deviceDetail.operatingSystem) { $_.deviceDetail.operatingSystem } else { "Unknown" } }
     $browserTypes = $SignInData | ForEach-Object { if ($_.deviceDetail.browser) { $_.deviceDetail.browser } else { "Unknown" } }
-    $userAgent = $SignInData | ForEach-Object { if ($_.userAgent) { $_.userAgent } else { "Unknown" } }
+    $userAgents = $SignInData | ForEach-Object { if ($_.deviceDetail.userAgent) { $_.deviceDetail.userAgent } else { "Unknown" } }
     $appDisplayNames = $SignInData | ForEach-Object { if ($_.appDisplayName) { $_.appDisplayName } else { "Unknown" } }
     $deviceIds = $SignInData | ForEach-Object { if ($_.deviceDetail.deviceId) { $_.deviceDetail.deviceId } else { "NULL" } }
+    $errorCodes = $SignInData | ForEach-Object { $_.status.errorCode }
+    $accountNames = $SignInData | ForEach-Object { $_.userPrincipalName }
+    $resultCodes = $SignInData | ForEach-Object { $_.status.additionalDetails }
 
     # Statistical analysis
     $analysis.IPs = $ips | Group-Object | Sort-Object Count -Descending
@@ -98,9 +125,12 @@ function Analyze-SignInData {
     $analysis.Times = $times | Group-Object { $_.ToString("HH") } | Sort-Object Name
     $analysis.OSTypes = $osTypes | Group-Object | Sort-Object Count -Descending
     $analysis.BrowserTypes = $browserTypes | Group-Object | Sort-Object Count -Descending
-    $analysis.UserAgent = $userAgent | Group-Object | Sort-Object Count -Descending
+    $analysis.UserAgents = $userAgents | Group-Object | Sort-Object Count -Descending
     $analysis.AppDisplayNames = $appDisplayNames | Group-Object | Sort-Object Count -Descending
     $analysis.DeviceIds = $deviceIds | Group-Object | Sort-Object Count -Descending
+    $analysis.ErrorCodes = $errorCodes | Group-Object | Sort-Object Count -Descending
+    $analysis.AccountNames = $accountNames | Group-Object | Sort-Object Count -Descending
+    $analysis.ResultCodes = $resultCodes | Group-Object | Sort-Object Count -Descending
 
     return $analysis
 }
@@ -109,8 +139,16 @@ function Analyze-SignInData {
 function Display-Analysis {
     param (
         [Parameter(Mandatory = $true)]
-        [hashtable]$Analysis
+        [hashtable]$Analysis,
+        [Parameter(Mandatory = $false)]
+        [string]$SectionTitle
     )
+
+    if ($SectionTitle) {
+        Write-Output ""
+        Write-Output "$SectionTitle"
+        Write-Output "====================================="
+    }
 
     foreach ($key in $Analysis.Keys) {
         Write-Output ""
@@ -122,13 +160,24 @@ function Display-Analysis {
 }
 
 # Main script execution
-$signInData = Get-UserSignInData -UserPrincipalName $UserPrincipalName
+# Get all sign-in data
+$allSignIns = Get-UserSignInData -UserPrincipalName $UserPrincipalName
 
-if ($signInData -ne $null -and $signInData.Count -gt 0) {
-    $analysis = Analyze-SignInData -SignInData $signInData
+# Categorize sign-in data into successful and failed pools
+$categorizedSignIns = Categorize-SignInData -SignInData $allSignIns
 
-    # Output analysis in a readable format
-    Display-Analysis -Analysis $analysis
+# Analyze and display failed sign-in data
+if ($categorizedSignIns.Failed -ne $null -and $categorizedSignIns.Failed.Count -gt 0) {
+    $analysisFailures = Analyze-SignInData -SignInData $categorizedSignIns.Failed
+    Display-Analysis -Analysis $analysisFailures -SectionTitle "Sign-In Failures"
 } else {
-    Write-Output "No sign-in data found for user $UserPrincipalName."
+    Write-Output "No sign-in failure data found for user $UserPrincipalName."
+}
+
+# Analyze and display successful sign-in data
+if ($categorizedSignIns.Successful -ne $null -and $categorizedSignIns.Successful.Count -gt 0) {
+    $analysisSuccesses = Analyze-SignInData -SignInData $categorizedSignIns.Successful
+    Display-Analysis -Analysis $analysisSuccesses -SectionTitle "Successful Sign-Ins"
+} else {
+    Write-Output "No successful sign-in data found for user $UserPrincipalName."
 }
