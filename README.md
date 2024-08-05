@@ -1,3 +1,7 @@
+### Synopsis
+
+The provided PowerShell script is designed to assist with threat hunting and incident response by collecting, categorizing, and analyzing Azure AD sign-in data. The script connects to Microsoft Graph, retrieves all sign-in events for a specified user, and then separates these events into successful and failed sign-ins based on their error codes. This categorization allows security professionals to analyze patterns and detect anomalies in authentication activities, which can be crucial for identifying and mitigating potential security threats.
+
 #Data output example:
 
 ### Sign-In Failures
@@ -174,10 +178,6 @@
 
 ---
 
-
-### Synopsis
-
-The provided PowerShell script is designed to assist with threat hunting and incident response by collecting, categorizing, and analyzing Azure AD sign-in data. The script connects to Microsoft Graph, retrieves all sign-in events for a specified user, and then separates these events into successful and failed sign-ins based on their error codes. This categorization allows security professionals to analyze patterns and detect anomalies in authentication activities, which can be crucial for identifying and mitigating potential security threats.
 
 ### Detailed Review of the Code
 
