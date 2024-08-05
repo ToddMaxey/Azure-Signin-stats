@@ -174,18 +174,6 @@
 
 ---
 
-### Explanation
-
-- **IPs**: Original IPs have been replaced with fictional, private network IP addresses.
-- **Locations**: Locations are based on fictional places from "The Lord of the Rings" books.
-- **AccountNames**: Usernames have been replaced with characters from "The Lord of the Rings".
-- **DeviceIds**: Fictional UUIDs have been used.
-- **ASNs**: Retained as original since they don't directly identify users.
-- **ErrorCodes, ResultCodes, BrowserTypes, AppDisplayNames, Times, UserAgents, OSTypes**: These fields are non-identifying and have been retained as original.
-
-This de-identified data can now be safely shared for analysis or demonstration purposes without exposing sensitive information.
-
-
 
 ### Synopsis
 
