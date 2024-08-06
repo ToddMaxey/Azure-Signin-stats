@@ -37,6 +37,7 @@ Review the output for sign-in analysis, including categorized sign-ins, potentia
 
 Sample output
 
+```plaintext
 Sign-In Failures
 =====================================
 
@@ -45,6 +46,7 @@ ASN, IP, and Location Analysis
 
 ASN: 1111 IP: 1.1.1.1 Location: Bree, Eriador, Middle-earth Count: 2
 ASN: 1111 IP: 1.1.1.2 Location: Bree, Eriador, Middle-earth Count: 2
+
 Successful Sign-Ins
 =====================================
 
@@ -77,6 +79,7 @@ ASN: 1111 IP: 1.1.1.4 Location: Bree, Eriador, Middle-earth Count: 5
 ASN: 4444 IP: 6.6.6.7 Location: Minas Tirith, Gondor, Middle-earth Count: 3
 ASN: 6666 IP: 7.7.7.7 Location: Grey Havens, Lindon, Middle-earth Count: 52
 ASN: 4444 IP: 4.4.4.20 Location: Bucklebury, Shire, Middle-earth Count: 1
+
 Suspicious Sign-Ins Detected
 ===========================
 
@@ -87,10 +90,12 @@ Risk level:
 Risk state: none
 OS: Darwin
 App:
+
 Baseline Summary
 ===========================
 
 IPs, Locations, Devices, Browsers, UserAgents, OSTypes, Apps, ASNs in the baseline data:
+
 Locations:
 =====================================
 
@@ -107,11 +112,13 @@ Locations: Bucklebury, Shire, Middle-earth: 4
 Locations: Osgiliath, Gondor, Middle-earth: 2
 Locations: Edoras, Rohan, Middle-earth: 1
 Locations: Bucklebury, Shire, Middle-earth: 1
+
 Devices:
 =====================================
 
 Devices: ce637a66-1d54-4dc0-82be-ce7a7c5245d5: 1191
 Devices: : 15
+
 IPs:
 =====================================
 
@@ -141,6 +148,7 @@ IPs: 2.2.2.2: 1
 IPs: 4.4.4.7: 1
 IPs: 4.4.4.5: 1
 IPs: 4.4.4.20: 1
+
 Browsers:
 =====================================
 
@@ -150,6 +158,7 @@ Browsers: Safari 17.6: 7
 Browsers: Rich Client 4.59.1.0: 3
 Browsers: Edge 127.0.0: 3
 Browsers: : 1
+
 ASNs:
 =====================================
 
@@ -160,6 +169,7 @@ ASNs: 1111: 14
 ASNs: 3333: 5
 ASNs: 2222: 1
 ASNs: 0: 1
+
 OSTypes:
 =====================================
 
@@ -168,6 +178,7 @@ OSTypes: Ios 17.6: 256
 OSTypes: Windows10: 14
 OSTypes: Ios: 10
 OSTypes: Darwin: 1
+
 UserAgents:
 =====================================
 
@@ -184,3 +195,4 @@ Apps: Microsoft Edge: 6
 Apps: Microsoft_Azure_Billing: 3
 Apps: Microsoft_AAD_GTM: 1
 Apps: : 1
+```
