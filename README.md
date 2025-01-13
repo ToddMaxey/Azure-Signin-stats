@@ -34,6 +34,10 @@ Execute the script in a PowerShell environment.
 Input the User Principal Name (UPN) when prompted.
 Review the output for sign-in analysis, including categorized sign-ins, potential unauthorized sign-ins, and a baseline summary.
 
+Azure Permissions Required:
+User.Read.All
+AuditLog.Read.All
+Directory.Read.All
 
 Sample output
 
